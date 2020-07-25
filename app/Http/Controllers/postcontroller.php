@@ -15,7 +15,7 @@ class postcontroller extends Controller
     public function index()
     {   
         //$postdt=post::all();
-        $postdt=post::orderBy('created_at','desc')->get();
+        $postdt=post::orderBy('created_at','desc')->paginate(1);
         return view('posts.index')->withpostdt($postdt);
     }
 

@@ -8,6 +8,7 @@
             <h5 align='right'>Post written on{{$item->created_at}}</h5>
             <h5 align=right>Post updated at{{$item->updated_at}}</h5>
         @endforeach
+        {{$postdt->links()}}
     @else
         <p>No Posts Found</p>
     @endif

@@ -15,7 +15,7 @@ class postcontroller extends Controller
     public function index()
     {   
         //$postdt=post::all();
-        $postdt=post::orderBy('created_at','desc')->paginate(1);
+        $postdt=post::orderBy('created_at','desc')->paginate(3);
         return view('posts.index')->withpostdt($postdt);
     }
 
@@ -26,7 +26,7 @@ class postcontroller extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.create');
     }
 
     /**
@@ -37,7 +37,18 @@ class postcontroller extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate(
+            $request,
+                ['title'=>'required',
+                'body'=>'required'
+            ]
+        );
+        $post=new post;
+        $post->title=$request->input('title');
+        $post->body=$request->input('body');
+        $post->save();
+        return redirect('/posts')->withsuccess('Post sucessfully created');
+
     }
 
     /**

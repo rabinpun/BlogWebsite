@@ -7,7 +7,7 @@
     {{Form::label('title','Title')}}
     {{Form::text('title','',['class'=>'form-control','placeholder'=>'Enter the title'])}}
     {{Form::label('body','Content')}}
-    {{Form::textarea('body','',['id'=>'article-ckeditor','class'=>'form-control','placeholder'=>'Enter the content'])}}
+    {{Form::textarea('body','',['id'=>'summary-ckeditor','class'=>'form-control','placeholder'=>'Enter the content'])}}
    
 
 

@@ -15,6 +15,6 @@ class Post extends Model
     public $timestamps=true;
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User');//posts belongs to user one to one relation between post model to user model
     } 
 }

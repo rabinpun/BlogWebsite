@@ -37,6 +37,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     public function posts(){
-            return $this->hasMany('App\Post');
+            return $this->hasMany('App\Post');//one user has many posts many to one relation between user model to post model
     }
 }

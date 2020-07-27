@@ -27,7 +27,6 @@
                                 <h5 align=right>By {{$item->user->name}}</h5>
                                 <div class='container'>
                                     <a class="btn  btn-lg btn-primary float-left " href="/posts/{{$item->user_id}}/edit" role="button">Edit</a>
-
                                         {!!Form::open(['action'=>['postcontroller@destroy',$item->id],'method'=>'DELETE'])!!}
                                         {{Form::submit('Delete',['class'=>'btn btn-lg btn-danger float-right'])}}
                                         {!!Form::close()!!}</div></ul>

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;//so we can inherit the default controller features
 
 use Illuminate\Http\Request;//so we can use (Request $request) in fuction
+use Illuminate\Support\Facades\Storage;//must be includeded to delete photo or file from storage location
 use App\post;//so we can use post model
+use App\user;
 
 class postcontroller extends Controller
 {   
@@ -42,18 +44,36 @@ class postcontroller extends Controller
     public function store(Request $request)//the title and body we had input in the create page is sent in this function as single argument $Request, 
     {                                     //$id is not taken as argument as when creating new post the id is auto incremented and saved also the previous page 
                                           //has only sent default $request in action='postscontroller@store' no id is sent      
-        $this->validate(//validate used to sanitize the data
-            $request,
+        $this->validate($request,        //validate used to sanitize the data
                 ['title'=>'required',//title must be entered 
-                'body'=>'required'  //body must be entered
-            ]
+                'body'=>'required' //body must be entered
+                ,'cover_img'=>'image|nullable|max:1999'//cover_img must be image(.jpeg,jpg,gif) optional and max size 1999byte
+                ]
         );
+        //File handling(if the request has file it extracts its name otherwise saves as noimage.jpg)
+        if ($request->hasFile('cover_img')){
+            //getfullpicnamewith extension
+            $fileNameWithExt=$request->file('cover_img')->getClientOriginalName();
+            //extractnameonly
+            $fileName=pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            //extract the extension
+            $fileext=$request->file('cover_img')->getClientOriginalExtension();
+            //new name to store so that two img with same name wont conflict
+            $fileNameToStore=$fileName.'_'.time().'.'.$fileext;
+            //savingfile
+            $path=$request->file('cover_img')->storeAs('/public/cover_imgs',$fileNameToStore);
+        }
+        else
+        {
+            $fileNameToStore='noimage.jpg';
+        }
         $post=new post;//new post is created with name post
         $post->title=$request->input('title');//the title we put in the create page is saved to this newly created post
         $post->body=$request->input('body');//the  body we created in the create page is saved to this new post body
         $post->user_id=auth()->user()->id;//user id of the logged in person is saved as the user_id 
+        $post->cover_img=$fileNameToStore;
         $post->save();//saves this post
-        return redirect('/posts')->withsuccess('Post sucessfully created');//redirects to the posts page with success alert 'Post sucessfully created'
+        return redirect('/')->withsuccess('Post sucessfully created');//redirects to the posts page with success alert 'Post sucessfully created'
 
     }
 
@@ -81,7 +101,7 @@ class postcontroller extends Controller
         //so that guest and other user cant edit others post by using /post/{{$post->id}}/edit}
         if(auth()->user()->id !== $post->user_id)  //checking if userid and post user id matches
         {
-            return redirect('/posts')->witherror('Unauthorized Access');//if not authorized sends back to posts's homepage
+            return redirect('/')->witherror('Unauthorized Access');//if not authorized sends back to posts's homepage
                                                                    //with error alert
         }
         
@@ -103,11 +123,26 @@ class postcontroller extends Controller
                 'body'=>'required'
             ]
         );
+        if ($request->hasFile('cover_img')){
+            //getfullpicnamewith extension
+            $fileNameWithExt=$request->file('cover_img')->getClientOriginalName();
+            //extractnameonly
+            $fileName=pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            //extract the extension
+            $fileext=$request->file('cover_img')->getClientOriginalExtension();
+            //new name to store so that two img with same name wont conflict
+            $fileNameToStore=$fileName.'_'.time().'.'.$fileext;
+            //savingfile
+            $path=$request->file('cover_img')->storeAs('/public/cover_imgs',$fileNameToStore);
+        }
         $post=post::find($id);
         $post->title=$request->input('title');
         $post->body=$request->input('body');
+        if ($request->hasFile('cover_img')){
+            $post->cover_img=$fileNameToStore;
+        }
         $post->save();
-        return redirect('/posts')->withsuccess('Post sucessfully updated');
+        return redirect('/')->withsuccess('Post sucessfully updated');
     }
     /**
      * Remove the specified resource from storage.
@@ -124,7 +159,10 @@ class postcontroller extends Controller
             return redirect('/posts')->witherror('Unauthorized Access');//if not authorized sends back to posts's homepage
                                                                    //with error alert
         }
+        if ($post->cover_img != 'noimage.jpg') {
+           Storage::delete( 'public/cover_imgs/'. $post->cover_img);
+        }
         $post->delete();
-        return redirect('/posts')->withsuccess('Post sucessfully deleted');
+        return redirect('/')->withsuccess('Post sucessfully deleted');
     }
 }

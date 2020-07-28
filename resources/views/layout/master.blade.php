@@ -22,11 +22,12 @@
 <body>
         <div class="container">
                 @include('include.message')
-                @yield('content')</div>
+                @yield('content')
                 <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
                 <script>
                 CKEDITOR.replace( 'summary-ckeditor' );
                 </script>
+                </div>
     
 </body>
 </html>

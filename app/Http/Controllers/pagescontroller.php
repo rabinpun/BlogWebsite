@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\post;
+use App\user;
 class pagescontroller extends Controller
 {
     public function index()
     {
-
-        return view('pages.index');
+        $user_id=auth()->user()->id;
+        $user=User::find($user_id);
+        return view('pages.index')->withposts($user->posts);
     }
     public function about()
     {

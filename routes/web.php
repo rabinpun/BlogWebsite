@@ -9,3 +9,4 @@ Route::resource('posts','postcontroller');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
+

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;//so we can inherit the default controller features
 
+use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Http\Request;//so we can use (Request $request) in fuction
 use Illuminate\Support\Facades\Storage;//must be includeded to delete photo or file from storage location
-use App\post;//so we can use post model
-use App\user;
+use App\Post;//so we can use post model
+use App\User;
 
 class postcontroller extends Controller
 {   
@@ -61,17 +62,21 @@ class postcontroller extends Controller
             //new name to store so that two img with same name wont conflict
             $fileNameToStore=$fileName.'_'.time().'.'.$fileext;
             //savingfile
-            $path=$request->file('cover_img')->storeAs('/public/cover_imgs',$fileNameToStore);
+           // $path=$request->file('cover_img')->storeAs('/public/cover_imgs',$fileNameToStore);
         }
         else
         {
-            $fileNameToStore='noimage.jpg';
+            $fileNameToStore='noimg.jpg';
         }
-        $post=new post;//new post is created with name post
+        $img = Image::make($request->file('cover_img'));
+        $img->save(public_path('/cover_imgs/'.$fileNameToStore));
+        //$img=$request->file('cover_img');
+        $post=new Post;//new post is created with name post
         $post->title=$request->input('title');//the title we put in the create page is saved to this newly created post
         $post->body=$request->input('body');//the  body we created in the create page is saved to this new post body
         $post->user_id=auth()->user()->id;//user id of the logged in person is saved as the user_id 
         $post->cover_img=$fileNameToStore;
+        //$img->save('public/cover_imgs/'.$fileNameToStore.'.jpg');
         $post->save();//saves this post
         return redirect('/')->withsuccess('Post sucessfully created');//redirects to the posts page with success alert 'Post sucessfully created'
 
@@ -133,9 +138,11 @@ class postcontroller extends Controller
             //new name to store so that two img with same name wont conflict
             $fileNameToStore=$fileName.'_'.time().'.'.$fileext;
             //savingfile
-            $path=$request->file('cover_img')->storeAs('/public/cover_imgs',$fileNameToStore);
+            //$path=$request->file('cover_img')->storeAs('/public/cover_imgs',$fileNameToStore);
         }
-        $post=post::find($id);
+        $post= Post::find($id);
+        $img = Image::make($request->file('cover_img'));
+        $img->save(public_path('/cover_imgs/'.$fileNameToStore));
         $post->title=$request->input('title');
         $post->body=$request->input('body');
         if ($request->hasFile('cover_img')){
